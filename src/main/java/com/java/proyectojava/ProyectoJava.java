@@ -11,6 +11,10 @@ package com.java.proyectojava;
 public class ProyectoJava {
 
     public static void main(String[] args) {
-        System.out.println("Hola Mundo!");
+        System.out.println("Iniciando aplicacion!");
+        Principal interfazPrincipal = new Principal();
+        interfazPrincipal.setLocationRelativeTo(null);
+        interfazPrincipal.setVisible(true);
+        interfazPrincipal.toFront();
     }
 }

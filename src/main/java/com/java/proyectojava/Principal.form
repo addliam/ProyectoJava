@@ -301,7 +301,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="BarraBusqueda">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Producto"/>
+            <Property name="text" type="java.lang.String" value="Escriba el producto"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="BarraBusquedaActionPerformed"/>

@@ -4,6 +4,10 @@
  */
 package com.java.proyectojava;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author DIEGO
@@ -11,11 +15,30 @@ package com.java.proyectojava;
 
 public class Principal extends javax.swing.JFrame {
 
-    
-   
-    
+    BaseDatos baseDatos = new BaseDatos();
+    DefaultTableModel modeloTablaProducto;
+    DefaultTableModel modeloTablaLista;
+    private final String[] nombreColumnas = {"ID", "Tienda", "Producto","Precio"};
+
     public Principal() {
         initComponents();
+        configurarTablas();
+    }
+    
+    private void configurarTablas(){
+        Object[][] data = {};
+        modeloTablaProducto = new DefaultTableModel(data, nombreColumnas);
+        jTableProductos.setModel(modeloTablaProducto);    
+        jTableProductos.getColumnModel().getColumn(0).setPreferredWidth(50);
+        jTableProductos.getColumnModel().getColumn(0).setMaxWidth(50);        
+        
+        jTableProductos.getColumnModel().getColumn(1).setPreferredWidth(80);
+        jTableProductos.getColumnModel().getColumn(1).setMaxWidth(80);        
+        
+        jTableProductos.getColumnModel().getColumn(2).setPreferredWidth(250);
+        
+        jTableProductos.getColumnModel().getColumn(3).setPreferredWidth(50);
+        jTableProductos.getColumnModel().getColumn(3).setMaxWidth(50);                
     }
 
     /**
@@ -122,7 +145,7 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
-        BarraBusqueda.setText("Producto");
+        BarraBusqueda.setText("Escriba el producto");
         BarraBusqueda.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 BarraBusquedaActionPerformed(evt);
@@ -241,7 +264,19 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void jButtonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuscarActionPerformed
-        // TODO add your handling code here:
+        // limpiamos la tabla
+        modeloTablaProducto.setRowCount(0);
+        String productoBusqueda = BarraBusqueda.getText();
+        if (productoBusqueda != ""){
+            // consultamos por los productos que empiezan con la palabra de busqueda
+            ArrayList<Producto> listaProductos =  baseDatos.buscarProductos(productoBusqueda);
+            // completamos la tabla con los valores obtenidos
+            DecimalFormat df2 = new DecimalFormat("#####.00");
+            for (Producto prod: listaProductos){
+                Object[] fila = {prod.getId(), prod.getTienda(), prod.getProducto(), df2.format(prod.getPrecio())};
+                modeloTablaProducto.addRow(fila);            
+            }
+        }
     }//GEN-LAST:event_jButtonBuscarActionPerformed
 
     /**
