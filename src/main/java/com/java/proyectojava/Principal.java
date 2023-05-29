@@ -4,12 +4,6 @@
  */
 package com.java.proyectojava;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import javax.swing.table.DefaultTableModel;
-
 /**
  *
  * @author DIEGO
@@ -17,64 +11,8 @@ import javax.swing.table.DefaultTableModel;
 
 public class Principal extends javax.swing.JFrame {
 
-    BaseDatos baseDatos = new BaseDatos();
-    DefaultTableModel modeloTablaProducto;
-    DefaultTableModel modeloTablaLista;
-    private final String[] nombreColumnas = {"ID", "Tienda", "Producto","Precio"};
-    private final String[] nombreColumnasLista = {"ID", "Tienda", "Producto","Cantidad","Precio"};
-
-    DecimalFormat df2 = new DecimalFormat("#####.00");
-    
     public Principal() {
         initComponents();
-        configurarTablas();
-    }
-    
-    private void configurarTablas(){
-        Object[][] data = {};
-        modeloTablaProducto = new DefaultTableModel(data, nombreColumnas);
-        jTableProductos.setModel(modeloTablaProducto);    
-        jTableProductos.getColumnModel().getColumn(0).setPreferredWidth(50);
-        jTableProductos.getColumnModel().getColumn(0).setMaxWidth(50);        
-        jTableProductos.getColumnModel().getColumn(1).setPreferredWidth(80);
-        jTableProductos.getColumnModel().getColumn(1).setMaxWidth(80);        
-        jTableProductos.getColumnModel().getColumn(2).setPreferredWidth(250);
-        jTableProductos.getColumnModel().getColumn(3).setPreferredWidth(50);
-        jTableProductos.getColumnModel().getColumn(3).setMaxWidth(50);                
-        
-        jTableProductos.addMouseListener(new MouseAdapter(){
-            public void mouseClicked(MouseEvent me){
-                if (me.getClickCount() == 2){
-                    int row = jTableProductos.getSelectedRow();
-                    
-                    int numeroColumnas = 4;
-                    int idSeleccionado = Integer.parseInt(jTableProductos.getValueAt(row, 0).toString());
-                    String tiendaSeleccionado = jTableProductos.getValueAt(row, 1).toString();
-                    String productoSeleccionado = jTableProductos.getValueAt(row, 2).toString();
-                    
-                    double precioSeleccionado = Double.parseDouble(jTableProductos.getValueAt(row, 3).toString());
-                    Producto prod = new Producto();
-                    prod.setId(idSeleccionado);
-                    prod.setTienda(tiendaSeleccionado);
-                    prod.setProducto(productoSeleccionado);
-                    prod.setPrecio(precioSeleccionado);
-                    Object[] nuevaFila = {prod.getId(),prod.getTienda(),prod.getProducto(),1,prod.getPrecio()};
-                    modeloTablaLista.addRow(nuevaFila);
-                }
-            }
-        });
-        
-        modeloTablaLista = new DefaultTableModel(data, nombreColumnasLista);
-        jTableLista.setModel(modeloTablaLista);
-        jTableLista.getColumnModel().getColumn(0).setPreferredWidth(50);
-        jTableLista.getColumnModel().getColumn(0).setMaxWidth(50);        
-        jTableLista.getColumnModel().getColumn(1).setPreferredWidth(80);
-        jTableLista.getColumnModel().getColumn(1).setMaxWidth(80);        
-        jTableLista.getColumnModel().getColumn(2).setPreferredWidth(250);
-        jTableLista.getColumnModel().getColumn(3).setPreferredWidth(70);
-        jTableLista.getColumnModel().getColumn(3).setMaxWidth(70);          
-        jTableLista.getColumnModel().getColumn(4).setPreferredWidth(50);
-        jTableLista.getColumnModel().getColumn(4).setMaxWidth(50);           
     }
 
     /**
@@ -122,7 +60,6 @@ public class Principal extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jTableProductos.setCellSelectionEnabled(false);
         jTableProductos.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTableProductos);
         jTableProductos.setDefaultEditor(Object.class, null);
@@ -303,17 +240,6 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonLimpiarActionPerformed
 
     private void jButtonCalcularTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCalcularTotalActionPerformed
-        int numeroColumnas = modeloTablaLista.getColumnCount();
-        int numeroFilas = modeloTablaLista.getRowCount();
-        double total = 0;
-        // POR HACER: validacion de datos         
-        for (int i=0;i<numeroFilas;i++){
-            int cantidad = Integer.parseInt(modeloTablaLista.getValueAt(i, 3).toString());
-            double precio = Double.parseDouble(modeloTablaLista.getValueAt(i, 4).toString());
-            double subTotal = precio * cantidad;
-            total += subTotal;
-        }
-        jTextFieldTotal.setText(df2.format(total));
     }//GEN-LAST:event_jButtonCalcularTotalActionPerformed
 
     private void BarraBusquedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BarraBusquedaActionPerformed
@@ -325,18 +251,6 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void jButtonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuscarActionPerformed
-        // limpiamos la tabla
-        modeloTablaProducto.setRowCount(0);
-        String productoBusqueda = BarraBusqueda.getText();
-        if (productoBusqueda != ""){
-            // consultamos por los productos que empiezan con la palabra de busqueda
-            ArrayList<Producto> listaProductos =  baseDatos.buscarProductos(productoBusqueda);
-            // completamos la tabla con los valores obtenidos
-            for (Producto prod: listaProductos){
-                Object[] fila = {prod.getId(), prod.getTienda(), prod.getProducto(), df2.format(prod.getPrecio())};
-                modeloTablaProducto.addRow(fila);            
-            }
-        }
     }//GEN-LAST:event_jButtonBuscarActionPerformed
 
     /**
@@ -376,20 +290,20 @@ public class Principal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField BarraBusqueda;
-    private javax.swing.JButton jButtonBuscar;
-    private javax.swing.JButton jButtonCalcularTotal;
-    private javax.swing.JButton jButtonImprimir;
-    private javax.swing.JButton jButtonLimpiar;
-    private javax.swing.JComboBox<String> jComboBox1;
+    public javax.swing.JTextField BarraBusqueda;
+    public javax.swing.JButton jButtonBuscar;
+    public javax.swing.JButton jButtonCalcularTotal;
+    public javax.swing.JButton jButtonImprimir;
+    public javax.swing.JButton jButtonLimpiar;
+    public javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTableLista;
-    private javax.swing.JTable jTableProductos;
-    private javax.swing.JTextField jTextFieldTotal;
+    public javax.swing.JTable jTableLista;
+    public javax.swing.JTable jTableProductos;
+    public javax.swing.JTextField jTextFieldTotal;
     // End of variables declaration//GEN-END:variables
 }
