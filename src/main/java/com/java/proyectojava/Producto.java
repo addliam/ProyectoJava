@@ -15,13 +15,18 @@ public class Producto {
     String producto;
     double precio;
     String tienda;
+
+    public Producto(){};
     
     public Producto(int id, int codTienda, String producto, double precio) {
         this.id = id;
         this.codTienda = codTienda;
         this.producto = producto;
         this.precio = precio;
-        
+        actualizarTienda();
+    }    
+    
+    private void actualizarTienda(){
         String nombreTienda = "";
         switch (codTienda) {
             case 1:
@@ -37,6 +42,32 @@ public class Producto {
                 nombreTienda = "Desconocido";
         }
         tienda = nombreTienda;
+    }
+
+    @Override
+    public String toString() {
+        return ("Id: "+id+", Tienda: "+tienda+", Producto: "+producto+", Precio: "+precio);
+    }
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setCodTienda(int codTienda) {
+        this.codTienda = codTienda;
+        actualizarTienda();
+    }
+
+    public void setProducto(String producto) {
+        this.producto = producto;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public void setTienda(String tienda) {
+        this.tienda = tienda;
     }
     
     public int getId() {
