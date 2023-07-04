@@ -71,7 +71,9 @@ public class Controlador implements ActionListener {
         }
         // iterar sobre la data en forma de arraylist anidado
         InvoiceTableExample invoiceTable = new InvoiceTableExample();
-        invoiceTable.drawTable(data);   
+        // Ordenar los elementos de data alfabeticamente por producto;
+        ArrayList<ArrayList<Object>> dataOrdenada = Utilidad.ordenarAlfabeticamente(data);
+        invoiceTable.drawTable(dataOrdenada);   
         // abrir el archivo "presupuesto.pdf" con la app predeterminada del sistema
         String fileName = "presupuesto.pdf";
         String filePath = System.getProperty("user.dir") + File.separator + fileName;
