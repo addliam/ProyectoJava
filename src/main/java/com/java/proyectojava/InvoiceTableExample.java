@@ -27,7 +27,7 @@ public class InvoiceTableExample {
         if (data.size() != 6) {
             throw new Exception("Data debe ser exactamente 6 elementos: N, Tienda, Producto, Cantidad, Precio, SubTotal");
         }
-        contentStream.setFont(PDType1Font.HELVETICA, 11);
+        contentStream.setFont(PDType1Font.HELVETICA, 10);
         // 420 es la suma de los tableOffsets[1:] 
         contentStream.newLineAtOffset(-420, -20); // Move to the next row
         contentStream.showText(String.valueOf(data.get(0)));
@@ -57,7 +57,14 @@ try {
             document.addPage(page);
             
             PDPageContentStream contentStream = new PDPageContentStream(document, page);
-                        
+
+            // Dibujar titulo
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(180, 740);
+            contentStream.showText("Presupuesto de lista de compras");
+            contentStream.endText();
+            
             // Draw table headers
             contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
             contentStream.beginText();;
@@ -77,16 +84,24 @@ try {
             // Draw table rows
             int contador = 1;
             double total = 0;
+            // formatear decimales a 2 digitos
+            DecimalFormat df2 = new DecimalFormat("#####.00");
             for (ArrayList<Object> innerList: datosTabla){
                 try {
                     ArrayList<Object> formattedList = new ArrayList<>();
                     formattedList.add(0, contador);
                     formattedList.add(1, innerList.get(1));
-                    formattedList.add(2, innerList.get(2));
+                    String nombreProducto = String.valueOf(innerList.get(2));
+                    if (nombreProducto.length() > 32){
+                        nombreProducto = nombreProducto.substring(0, 32) + "...";
+                    }
+                    // formatear el nombre de producto a max 32 chars, completar con puntos suspensivos    
+                    formattedList.add(2, nombreProducto);                    
+                    int cantidad = Integer.parseInt(String.valueOf(innerList.get(3)));
                     formattedList.add(3, innerList.get(3));
-                    formattedList.add(4, innerList.get(4));
-                    double subTotal = Double.parseDouble(String.valueOf(innerList.get(4)));
-                    DecimalFormat df2 = new DecimalFormat("#####.00");
+                    double precioUnitario = Double.parseDouble(String.valueOf(innerList.get(4)));
+                    formattedList.add(4, df2.format(precioUnitario));
+                    double subTotal = precioUnitario * cantidad;
                     formattedList.add(5, df2.format(subTotal));                    
                     total += subTotal;
                     innerList.set(0, document);
@@ -96,6 +111,13 @@ try {
                 }
                 contador += 1;
             }
+            // dibujar el total en el PDF
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            contentStream.newLineAtOffset(-60, -30);            
+            contentStream.showText("Total");
+            contentStream.setFont(PDType1Font.HELVETICA, 10);
+            contentStream.newLineAtOffset(60, 0);
+            contentStream.showText(String.valueOf(total));
             System.out.println("Total general: "+total);
 
             contentStream.endText();
