@@ -49,7 +49,27 @@ public class Controlador implements ActionListener {
         configurarTablas();
     }
 
-    private void jButtonCalcularTotalActionPerformed(java.awt.event.ActionEvent evt) {                                                     
+    private void jButtonCalcularTotalActionPerformed(java.awt.event.ActionEvent evt) {                       
+        ArrayList<ArrayList<Object>> data = new ArrayList<>();
+        for (int row = 0; row < modeloTablaLista.getRowCount(); row++) {
+            ArrayList<Object> rowData = new ArrayList<>();
+            for (int col = 0; col < modeloTablaLista.getColumnCount(); col++) {
+                Object value = modeloTablaLista.getValueAt(row, col);
+                rowData.add(value);
+            }
+            data.add(rowData);
+        }
+        // iterar sobre la data en forma de arraylist anidado
+        InvoiceTableExample invoiceTable = new InvoiceTableExample();
+        invoiceTable.drawTable(data);
+/*        for (ArrayList<Object> innerList : data) {
+            System.out.println(innerList);
+//            for (Object value : innerList) {
+//                System.out.println(value);
+//            }
+        }
+*/
+        System.out.println();
         int numeroFilas = modeloTablaLista.getRowCount();
         double total = 0;
         // POR HACER: validacion de datos         

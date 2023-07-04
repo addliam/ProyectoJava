@@ -71,8 +71,10 @@ public class HelloWorldPdf
             PDPageContentStream contentStream = new PDPageContentStream(doc, page);
             contentStream.beginText();
             contentStream.setFont( font, 12 );
-            contentStream.moveTextPositionByAmount( 100, 700 );
-            contentStream.drawString( message );
+            contentStream.newLineAtOffset(100, 10);
+            contentStream.showText(message);
+//            contentStream.moveTextPositionByAmount(100, 700 );
+//            contentStream.drawString( message );
             contentStream.endText();
             contentStream.close();
             System.out.println("Guardando archivo: "+file);
@@ -99,7 +101,12 @@ public class HelloWorldPdf
         HelloWorldPdf app = new HelloWorldPdf();
         try
         {
-            app.doIt("ejemplo.pdf", "Hola mundo pdf");
+            // ID, Tienda, Producto, Cantidad, Precio
+            // [1, Tottus, papa amarilla procesada tottus, 1, 7.1]
+            // [7467, Plaza Vea, sandia, 1, 2.69]
+            // [1533, Tottus, lenteja tottus 500 gr, 1, 4.0]    
+            // falta agregar un subtotal
+            app.doIt("ejemplo2.pdf", "Hola mundo pdf");
 //            if( args.length != 2 )
 //            {
 //                app.usage();
