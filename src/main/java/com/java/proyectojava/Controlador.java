@@ -7,6 +7,8 @@ import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -45,11 +47,16 @@ public class Controlador implements ActionListener {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonCalcularTotalActionPerformed(evt);
             }
-        });       
+        });  
+        vista.jButtonImprimir.addActionListener(new java.awt.event.ActionListener(){
+            public void actionPerformed(java.awt.event.ActionEvent evt){
+                dibujarTablaEnPDF();
+            }
+        });
         configurarTablas();
     }
 
-    private void jButtonCalcularTotalActionPerformed(java.awt.event.ActionEvent evt) {                       
+    private void dibujarTablaEnPDF(){
         ArrayList<ArrayList<Object>> data = new ArrayList<>();
         for (int row = 0; row < modeloTablaLista.getRowCount(); row++) {
             ArrayList<Object> rowData = new ArrayList<>();
@@ -61,18 +68,24 @@ public class Controlador implements ActionListener {
         }
         // iterar sobre la data en forma de arraylist anidado
         InvoiceTableExample invoiceTable = new InvoiceTableExample();
-        invoiceTable.drawTable(data);
-/*        for (ArrayList<Object> innerList : data) {
-            System.out.println(innerList);
-//            for (Object value : innerList) {
-//                System.out.println(value);
-//            }
-        }
-*/
-        System.out.println();
+        invoiceTable.drawTable(data);        
+    }
+    private void calcularPrecioTotal(){
+        // se convirtio a metodo para q sea llamado automaticamente
         int numeroFilas = modeloTablaLista.getRowCount();
         double total = 0;
-        // POR HACER: validacion de datos         
+        for (int i=0;i<numeroFilas;i++){
+            int cantidad = Integer.parseInt(modeloTablaLista.getValueAt(i, 3).toString());
+            double precio = Double.parseDouble(modeloTablaLista.getValueAt(i, 4).toString());
+            double subTotal = precio * cantidad;
+            total += subTotal;
+        }
+        vista.jTextFieldTotal.setText(df2.format(total));    
+    }
+    private void jButtonCalcularTotalActionPerformed(java.awt.event.ActionEvent evt) {                       
+        int numeroFilas = modeloTablaLista.getRowCount();
+        double total = 0;
+        // POR HACER: validacion de datos enteros en tabla       
         for (int i=0;i<numeroFilas;i++){
             int cantidad = Integer.parseInt(modeloTablaLista.getValueAt(i, 3).toString());
             double precio = Double.parseDouble(modeloTablaLista.getValueAt(i, 4).toString());
@@ -112,7 +125,42 @@ public class Controlador implements ActionListener {
         vista.jTableProductos.getColumnModel().getColumn(3).setPreferredWidth(50);
         vista.jTableProductos.getColumnModel().getColumn(3).setMaxWidth(50);
         
-        modeloTablaLista = new DefaultTableModel(data, nombreColumnasLista);
+        modeloTablaLista = new DefaultTableModel(data, nombreColumnasLista){
+            // hacer solo la columna cantida editable
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return column == 3;
+            }
+        };
+
+        // verificar si en tabla lista, el valor EDITADO en cantidad es entero positivo
+        modeloTablaLista.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                if (e.getColumn() == 3){
+                    int row = e.getFirstRow();
+                    String data = modeloTablaLista.getValueAt(row, 3).toString();
+                    boolean esEnteroPositivo = false;
+                    try {
+                        int dataNum = Integer.parseInt(data);
+                        if (dataNum > 0){
+                            esEnteroPositivo = true;
+                        }else{ esEnteroPositivo = false;}
+                    } catch (NumberFormatException excp) {
+                        esEnteroPositivo = false;
+                    }        
+                    if (!esEnteroPositivo){
+                        // Resetear el valor a uno
+                        modeloTablaLista.setValueAt(1, row, 3);
+                        JOptionPane.showMessageDialog(null, "Solo se permiten valores enteros positivos", "Error", JOptionPane.ERROR_MESSAGE);
+                    }else{
+                        // si el valor es entero, calculamos nuevamente el total
+                        calcularPrecioTotal();
+                    }
+                    
+                }
+            }
+        });
         vista.jTableLista.setModel(modeloTablaLista);
         vista.jTableLista.getColumnModel().getColumn(0).setPreferredWidth(50);
         vista.jTableLista.getColumnModel().getColumn(0).setMaxWidth(50);        
@@ -125,23 +173,44 @@ public class Controlador implements ActionListener {
         vista.jTableLista.getColumnModel().getColumn(4).setMaxWidth(50);  
         
         vista.jTableProductos.addMouseListener(new MouseAdapter(){
+            // metodo que maneja el doble click en la columna producto
             public void mouseClicked(MouseEvent me){
                 if (me.getClickCount() == 2){
                     int row = vista.jTableProductos.getSelectedRow();
                     
-                    int numeroColumnas = 4;
+                    // int numeroColumnas = 4;
                     int idSeleccionado = Integer.parseInt(vista.jTableProductos.getValueAt(row, 0).toString());
                     String tiendaSeleccionado = vista.jTableProductos.getValueAt(row, 1).toString();
                     String productoSeleccionado = vista.jTableProductos.getValueAt(row, 2).toString();
                     
                     double precioSeleccionado = Double.parseDouble(vista.jTableProductos.getValueAt(row, 3).toString());
-                    Producto prod = new Producto();
-                    prod.setId(idSeleccionado);
-                    prod.setTienda(tiendaSeleccionado);
-                    prod.setProducto(productoSeleccionado);
-                    prod.setPrecio(precioSeleccionado);
-                    Object[] nuevaFila = {prod.getId(),prod.getTienda(),prod.getProducto(),1,prod.getPrecio()};
-                    modeloTablaLista.addRow(nuevaFila);
+                    // Revisar si el producto ya fue agregado a la lista, aumentar cantidad += 1
+                    int numFilaProductoRepetido = -1;
+                    for (int i=0; i<modeloTablaLista.getRowCount();i++){
+                        // comprobar si el ID ya se encuentra en la lista seleccionada
+                        int id = Integer.parseInt(modeloTablaLista.getValueAt(i, 0).toString());
+                        if (id == idSeleccionado){
+                            numFilaProductoRepetido = i;
+                            break;
+                        }
+                    }
+                    // sino se repite el elemento seleccionado, agregar a la tabla lista
+                    if (numFilaProductoRepetido == -1){
+                        Producto prod = new Producto();
+                        prod.setId(idSeleccionado);
+                        prod.setTienda(tiendaSeleccionado);
+                        prod.setProducto(productoSeleccionado);
+                        prod.setPrecio(precioSeleccionado);
+                        Object[] nuevaFila = {prod.getId(),prod.getTienda(),prod.getProducto(),1,prod.getPrecio()};
+                        modeloTablaLista.addRow(nuevaFila);                        
+                    }
+                    else{
+                        // actualizar el valor de cantidad 
+                        int actualValorCantidad = Integer.parseInt(modeloTablaLista.getValueAt(numFilaProductoRepetido, 3).toString());
+                        modeloTablaLista.setValueAt(actualValorCantidad + 1, numFilaProductoRepetido, 3);
+                    }
+                    // actualizar
+                    calcularPrecioTotal();
                 }
             }
         });      
