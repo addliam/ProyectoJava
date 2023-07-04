@@ -10,6 +10,9 @@ import javax.swing.JOptionPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 
 /**
  *
@@ -68,7 +71,20 @@ public class Controlador implements ActionListener {
         }
         // iterar sobre la data en forma de arraylist anidado
         InvoiceTableExample invoiceTable = new InvoiceTableExample();
-        invoiceTable.drawTable(data);        
+        invoiceTable.drawTable(data);   
+        // abrir el archivo "presupuesto.pdf" con la app predeterminada del sistema
+        String fileName = "presupuesto.pdf";
+        String filePath = System.getProperty("user.dir") + File.separator + fileName;
+        File file = new File(filePath);
+        if (file.exists()) {
+            try {
+                Desktop.getDesktop().open(file);
+            } catch (IOException e) {
+                System.out.println("Error al abrir el archivo: " + e.getMessage());
+            }
+        } else {
+            System.out.println("El archivo no existe en la ubicación especificada.");
+        }        
     }
     private void calcularPrecioTotal(){
         // se convirtio a metodo para q sea llamado automaticamente

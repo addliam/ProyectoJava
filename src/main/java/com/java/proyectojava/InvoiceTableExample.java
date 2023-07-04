@@ -122,8 +122,8 @@ try {
 
             contentStream.endText();
             contentStream.close();
-            
-            document.save("invoice.pdf");
+            // TODO: generar nombre dinamicamente o preguntar al usuario
+            document.save("presupuesto.pdf");
             document.close();
             
             System.out.println("Invoice PDF created successfully.");
