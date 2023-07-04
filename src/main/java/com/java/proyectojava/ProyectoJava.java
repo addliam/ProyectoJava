@@ -16,6 +16,8 @@ public class ProyectoJava {
 //        interfazPrincipal.setLocationRelativeTo(null);
 //        interfazPrincipal.setVisible(true);
 //        interfazPrincipal.toFront();
+
+        // Se esta empleando el modelo MVC, este archivo es el punto de entrada
             Principal vista = new Principal();
             BaseDatos modelo = new BaseDatos();
             Controlador controlador = new Controlador(vista, modelo);

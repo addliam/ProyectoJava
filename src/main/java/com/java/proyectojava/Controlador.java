@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -65,7 +66,8 @@ public class Controlador implements ActionListener {
         // limpiamos la tabla
         modeloTablaProducto.setRowCount(0);
         String productoBusqueda = vista.BarraBusqueda.getText();
-        if (productoBusqueda != ""){
+        System.out.println("ProductoBusqueda:"+productoBusqueda);
+        if (!productoBusqueda.isBlank()){
             // consultamos por los productos que empiezan con la palabra de busqueda
             ArrayList<Producto> listaProductos =  modelo.buscarProductos(productoBusqueda);
             // completamos la tabla con los valores obtenidos
@@ -73,6 +75,8 @@ public class Controlador implements ActionListener {
                 Object[] fila = {prod.getId(), prod.getTienda(), prod.getProducto(), df2.format(prod.getPrecio())};
                 modeloTablaProducto.addRow(fila);            
             }
+        }else{
+            JOptionPane.showMessageDialog(null, "El campo no puede estar vacio", "Error de entrada", JOptionPane.ERROR_MESSAGE);
         }
     }           
     
