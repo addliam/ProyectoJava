@@ -117,7 +117,7 @@ try {
             contentStream.showText("Total");
             contentStream.setFont(PDType1Font.HELVETICA, 10);
             contentStream.newLineAtOffset(60, 0);
-            contentStream.showText(String.valueOf(total));
+            contentStream.showText(df2.format(total));
             System.out.println("Total general: "+total);
 
             contentStream.endText();
