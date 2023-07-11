@@ -190,8 +190,29 @@ public class Controlador implements ActionListener {
         vista.jTableLista.getColumnModel().getColumn(4).setPreferredWidth(50);
         vista.jTableLista.getColumnModel().getColumn(4).setMaxWidth(50);  
         
+        vista.jTableLista.addMouseListener(new MouseAdapter(){
+            // metodo que maneja el doble click en tabla lista de seleccionados para eliminar la fila
+            public void mouseClicked(MouseEvent me){
+                if (me.getClickCount() == 2){
+                    // prompt para eliminacion
+                    int opcion = JOptionPane.showConfirmDialog(null, "Esta seguro que deseas eliminar?", "Confirmacion eliminar elemento", JOptionPane.OK_CANCEL_OPTION);   
+                    int row = vista.jTableLista.getSelectedRow();
+                    if (opcion == JOptionPane.YES_OPTION) {
+                        System.out.println("Confirmacion eliminar");
+                        modeloTablaLista.removeRow(row);
+                        // actualizar
+                        calcularPrecioTotal();                        
+                    } else if (opcion == JOptionPane.NO_OPTION) {
+                        System.out.println("Accion eliminar cancelada");
+                    }                    
+                }
+                
+            
+            }
+        });
+        
         vista.jTableProductos.addMouseListener(new MouseAdapter(){
-            // metodo que maneja el doble click en la columna producto
+            // metodo que maneja el doble click en la tabla lista producto
             public void mouseClicked(MouseEvent me){
                 if (me.getClickCount() == 2){
                     int row = vista.jTableProductos.getSelectedRow();

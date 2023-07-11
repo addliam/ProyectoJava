@@ -114,7 +114,7 @@ public class Principal extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(jTableLista);
 
-        jLabel2.setText("Puedes modificar la cantidad presionando sobre el valor que deseas editar");
+        jLabel2.setText("Puedes modificar la cantidad presionando sobre el valor que deseas editar. Doble click para eliminar.");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);

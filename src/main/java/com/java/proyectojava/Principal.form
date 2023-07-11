@@ -260,7 +260,7 @@
         </Container>
         <Component class="javax.swing.JLabel" name="jLabel2">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Puedes modificar la cantidad presionando sobre el valor que deseas editar"/>
+            <Property name="text" type="java.lang.String" value="Puedes modificar la cantidad presionando sobre el valor que deseas editar. Doble click para eliminar."/>
           </Properties>
         </Component>
       </SubComponents>
